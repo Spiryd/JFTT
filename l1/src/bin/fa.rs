@@ -1,8 +1,8 @@
 use std::collections::{HashSet, HashMap};
 use std::env;
-use std::fs::{self, File};
-use std::io::{self, BufRead};
-use std::path::Path;
+use std::fs;
+
+use l1::*;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -15,16 +15,10 @@ fn main() {
             if let Ok(pattern_line) = line {
                 let pattern = pattern_line.split("'").take(2).collect::<Vec<_>>()[1].to_string();
                 println!("{}", &pattern);
-                finite_automaton_matcher(&pattern, &txt);
+                println!("{:?}", finite_automaton_matcher(&pattern, &txt));
             }
         }
     }
-}
-
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
 }
 
 fn extract_input_alphabet(txt: &String) -> HashSet<char> {
@@ -35,18 +29,20 @@ fn extract_input_alphabet(txt: &String) -> HashSet<char> {
     alphabet
 }
 
-fn finite_automaton_matcher(pattern: &String, txt: &String) {
+fn finite_automaton_matcher(pattern: &String, txt: &String) -> Vec<usize> {
     let m = pattern.chars().collect::<Vec<_>>().len();
     let n = txt.chars().collect::<Vec<_>>().len();
     let tf = compute_transition_function(m, extract_input_alphabet(txt), pattern);
     //dbg!(&tf);
+    let mut res = Vec::new();
     let mut state = 0;
     for i in 0..n {
         state = *tf[state].get(&txt.chars().nth(i).unwrap()).unwrap();
         if state == m {
-            println!("Found at {}", i-m+1);
+            res.push(i-m+1);
         }
     }
+    res
 }
 
 fn compute_transition_function(m: usize, alphabet: HashSet<char>, pattern: &String) -> Vec<HashMap<char, usize>>{
