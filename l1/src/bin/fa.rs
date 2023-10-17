@@ -33,7 +33,7 @@ fn finite_automaton_matcher(pattern: &String, txt: &String) -> Vec<usize> {
     let m = pattern.chars().collect::<Vec<_>>().len();
     let n = txt.chars().collect::<Vec<_>>().len();
     let tf = compute_transition_function(m, extract_input_alphabet(txt), pattern);
-    //dbg!(&tf);
+    
     let mut res = Vec::new();
     let mut state = 0;
     for i in 0..n {
@@ -51,11 +51,9 @@ fn compute_transition_function(m: usize, alphabet: HashSet<char>, pattern: &Stri
         for ch in &alphabet {
             let mut k = m.min(q+1);
             while !&format!("{}{}", pattern.chars().take(q).collect::<String>(), ch).ends_with(&pattern.chars().take(k).collect::<String>()){
-                //println!("{:?}", !pattern_starts_with_suffix(&pattern.chars().take(q).collect::<String>(), &pattern.chars().take(k).collect::<String>()));
                 k -= 1;
             }
             transition_function[q].insert(*ch, k);
-            //dbg!(&transition_function);
         }
     }
     transition_function
