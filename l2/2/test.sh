@@ -1,0 +1,1 @@
+$(cat tests/test0.xml | ./a.exe > output/test0.xml)
