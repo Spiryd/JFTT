@@ -1,11 +1,9 @@
 %{
     #include <stdio.h>
-    int yywrap();
-    int yylex();
-
+    /* flag for leaving docs */
     int DOC;
 %}
-
+    /* states */
 %x INCLUDE
 %x STRING
 %x MULTI_LINE_COMMENT
@@ -56,12 +54,15 @@ ALL .|\n|\\\n
 
 %%
 
-int yywrap(){};
+int yywrap() {
+    return 1; 
+}
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     if(argc > 1){
         DOC = 1;
     }
-    return yylex();
+    yyout = fopen("result.cpp", "w");
+    yylex();
+    return 0;
 }

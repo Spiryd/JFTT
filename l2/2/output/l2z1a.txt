@@ -1,7 +1,0 @@
-cat : Cannot find path 'E:\INA SEM5\JFTT\l2\2\tests\l2z1a.txt' because it does not exist.
-At line:1 char:1
-+ cat tests/l2z1a.txt
-+ ~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (E:\INA SEM5\JFTT\l2\2\tests\l2z1a.txt:String) [Get-Content], ItemNotFoundException
-    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand
- 

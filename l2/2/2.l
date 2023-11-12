@@ -1,8 +1,5 @@
 %{
-    #include \
-    <stdio.h>
-    int yywrap();
-    int yylex();
+    #include <stdio.h>
 %}
 
 %x TAG
@@ -34,9 +31,11 @@
 
 %%
 
-int yywrap(){};
-
-int main(int argc, char** argv)
-{
-   return yylex();
+int yywrap() {
+    return 1; 
+}
+int main() {
+    yyout = fopen("result.xml", "w");
+    yylex();
+    return 0;
 }

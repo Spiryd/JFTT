@@ -14,7 +14,7 @@ int stack_ptr = -1;
 int stack[stack_size];
 bool stack_err = false; 
 
-/*push to stack and retrieve*/
+/* push to stack */
 void push(int num) {
     stack_ptr++;
     if (stack_ptr < stack_size) {
@@ -25,35 +25,35 @@ void push(int num) {
     } 
 }
 
-/*pop from stack and retrieve*/
+/* pop from stack and retrieve */
 int pop()  {
     if (stack_ptr >= 0) {
         stack_ptr--;
         return stack[stack_ptr + 1];
     } else {
-        printf("Błąd zbyt mało argumentów.\n");
+        printf("Błąd: zbyt mało argumentów.\n");
         stack_err = true;
         return 0;
     }
 }
 
 %}
-
+    /* error state */
 %x ERROR
 
 %%
 
-    /*push a number*/
+    /* push a number to stack */
 -?[0-9]+        push(atoi(yytext));
 
-    /*addition*/
+    /* addition */
 \+            {
                     push(pop()+pop());
                     if (stack_err) 
                         BEGIN(ERROR);
                 }
 
-    /*addition*/
+    /* addition */
 \-             {
                     int a = pop();
                     int b = pop();
@@ -62,14 +62,14 @@ int pop()  {
                         BEGIN(ERROR);
                 }
 
-    /*multiplication*/
+    /* multiplication */
 \*             {
                     push(pop()*pop());
                     if (stack_err) 
                         BEGIN(ERROR);
                 }
 
-    /*division*/
+    /* division */
 \/             {
                     int divisor = pop();
                     if (divisor == 0) {
@@ -81,7 +81,7 @@ int pop()  {
                     if (stack_err) BEGIN(ERROR);
                 }
 
-    /*division with reminder*/
+    /* division with reminder */
 \%             {
                     int divisor = pop();
                     if (divisor == 0) {
@@ -93,12 +93,12 @@ int pop()  {
                     if (stack_err) BEGIN(ERROR);
                 }
     
-    /*power*/
+    /* power */
 \^             { 
     push( (int) pow((double) pop(), (double) pop()));
     }
 
-    /*new line - next mathematical operation*/
+    /* new line - next mathematical operation */
 \n            {       
                     if(!error){
                         if (stack_ptr == 0) {
@@ -114,12 +114,12 @@ int pop()  {
                     
                 }
 
-    /*check for not stated symbols*/
+    /* check for not stated symbols */
 [^[:blank:]]    {printf("Błąd: zły symbol %s\n", yytext); error = true;};
-    /*eat up whitespace*/
+    /* eat up whitespace */
 [[:blank:]]     ;
 
-    /*error state*/
+    /* error state  handeling */
 <ERROR>{
 .*       ;
 \n       {
