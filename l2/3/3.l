@@ -12,15 +12,15 @@
 ALL .|\n|\\\n
 
 %%
-    /*short documentation comments*/
+    /* short documentation comments */
 ((\/(\\\n)*\/(\\\n)*\/)|(\/(\\\n)*\/(\\\n)*!)).*(\\\n.*)*	{if(DOC) ECHO;};
 
 
-    /*short comment*/
+    /* short comment */
 \/(\\\n)*\/.*(\\\n.*)* ;
 
 
-    /*documentation mode*/
+    /* documentation mode */
     (^[[:blank:]]*)?(\/\*\*)|(\/\*!)            {if(DOC) ECHO; BEGIN(DOCUMENTATION);};
     <DOCUMENTATION>{
         {ALL}   {if(DOC) ECHO;}
@@ -28,7 +28,7 @@ ALL .|\n|\\\n
     }
 
 
-    /*multi line comments*/
+    /* multi line comments */
 \/\*            {BEGIN(MULTI_LINE_COMMENT);};
 <MULTI_LINE_COMMENT>{
     "*/"        BEGIN(0);
@@ -36,7 +36,7 @@ ALL .|\n|\\\n
 }
 
 
-    /*string*/
+    /* string */
 \" ECHO; BEGIN(STRING);
 <STRING>{
     /* (\\\") -> \n */
@@ -45,7 +45,7 @@ ALL .|\n|\\\n
 }
 
     
-    /*includes*/
+    /* includes */
 "#include"[ \t\n\\\n]+< ECHO; BEGIN(INCLUDE);
 <INCLUDE>{
     ">"         ECHO; BEGIN(0);
