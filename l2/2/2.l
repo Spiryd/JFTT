@@ -20,12 +20,6 @@
 .|\n            ;
 "-->"           BEGIN(0);
 }
-    /*string*/
-
-<STR>{
-    \"          ECHO; BEGIN(0);
-}
-
     /*invalid comment - leave it!*/
 "<!--".*"--".*"-->" {ECHO;}
 

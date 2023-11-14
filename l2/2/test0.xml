@@ -6,6 +6,9 @@
   <![CDATA[
     In CDATA <!-- everything is data!!! -->
   ]]>
+  <element>
+    to jest text "tekst<!-- ... -->"
+  </element>
   <!-- valid comment -->
   <!-- invalid -- comment -->
 </root>

@@ -15,13 +15,10 @@ WHITESPACE [[:blank:]]
 {WHITESPACE}|\n
 <NEWLINE>. {
     fprintf(yyout, "\n");
-    /* call the second best rule:
-    ABOVE -> you have encountered whitespaces;
-    BELOW -> you have encountered a WORD */
-    BEGIN(0);
+    REJECT;
 }
 . {
-        /* if you read something that isn't a white space */
+    /*if you read something that isn't a white space*/
     ECHO;
     words++;
     lines++;
@@ -29,20 +26,18 @@ WHITESPACE [[:blank:]]
 }
 
 <WORD>{
-        /* encountered a blank after word*/
     [[:blank:]] BEGIN(BLANKS);
-        /* encountered a newline after word*/
     \n BEGIN(NEWLINE);
 }
 
 <BLANKS>{
-        /* delete all the whitespaces */
+    /*delete all the whitespaces*/
     {WHITESPACE}
     
     \n BEGIN(NEWLINE);
-        /*encounter something else than whitespace? print space than print the byte*/
+    /*if you encounter something else than whitespace, print a space and THEN print the encounterd byte out*/
     . {
-        fprintf(yyout, " ");;
+        fprintf(yyout, " ");
         ECHO;
         BEGIN(WORD);
         words++;

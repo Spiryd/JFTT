@@ -21,11 +21,11 @@ ALL .|\n|\\\n
 
 
     /* documentation mode */
-    (^[[:blank:]]*)?(\/\*\*)|(\/\*!)            {if(DOC) ECHO; BEGIN(DOCUMENTATION);};
-    <DOCUMENTATION>{
-        {ALL}   {if(DOC) ECHO;}
-        "*/"    {if(DOC) ECHO; BEGIN(0);}
-    }
+(^[[:blank:]]*)?(\/\*\*)|(\/\*!)            {if(DOC) ECHO; BEGIN(DOCUMENTATION);};
+<DOCUMENTATION>{
+    {ALL}       {if(DOC) ECHO;}
+    "*/"        {if(DOC) ECHO; BEGIN(0);}
+}
 
 
     /* multi line comments */
@@ -39,7 +39,7 @@ ALL .|\n|\\\n
     /* string */
 \" ECHO; BEGIN(STRING);
 <STRING>{
-    /* (\\\") -> \n */
+        /* (\\\") -> \n */
     \\\"        ECHO;
     \"          ECHO; BEGIN(0);
 }
