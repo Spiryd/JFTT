@@ -26,6 +26,6 @@ extern int yylex();
 "/" {return '/';}
 "^" {return '^';}
 \n  {return '\n';}
-"\\" {return EXTD} 
+"\\" {return EXTD;}
 .   {return ERR;}
 %%
