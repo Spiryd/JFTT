@@ -1,4 +1,3 @@
-
 %{
 #define YYSTYPE int
 #include <iostream>
@@ -11,13 +10,13 @@ extern int yylex();
 extern int yyparse();
 int yyerror(string s);
 
-int zp_sub(int a, int b);
+int sub(int a, int b);
 
 int extended_euclid(int a, int b, int *x, int *y);
-int zp_inv(int a);
-int zp_div(long int a, int b);
+int inv(int a);
+int div(long int a, int b);
 
-int zp_pow(long int a, int pow);
+int pow(long int a, int pow);
 
 string error_msg = "";
 string rpn = "";
@@ -25,6 +24,7 @@ string rpn = "";
 
 %token NUM
 %token ERR
+%token EXTD
 %left '+' '-'
 %left '*' '/'
 %precedence NEG
@@ -55,9 +55,9 @@ expr:
     | '(' expr ')'                  { $$ = $2; }
     | '-' '(' expr ')' %prec NEG    { rpn += "~ "; $$ = ((-$3 % P) + P) % P; }
     | expr '+' expr                 { rpn += "+ "; $$ = ($1 + $3) % P; }
-    | expr '-' expr                 { rpn += "- "; $$ = zp_sub($1, $3); }
+    | expr '-' expr                 { rpn += "- "; $$ = sub($1, $3); }
     | expr '*' expr                 { rpn += "* "; $$ = ($1 * $3) % P; }
-    | expr '^' number                 { rpn += to_string(($3 - 1 + P) % P) + " ^ "; $$ = zp_pow($1, ($3 - 1 + P) % P); }
+    | expr '^' number                 { rpn += to_string(($3 - 1 + P) % P) + " ^ "; $$ = pow($1, ($3 - 1 + P) % P); }
     | expr '/' expr { 
             rpn += "/ "; 
             if ($3 == 0) { 
@@ -65,7 +65,7 @@ expr:
                 YYERROR; 
             } 
             else
-                $$ = zp_div($1, $3); 
+                $$ = div($1, $3); 
         }
 ;
 number:
@@ -75,7 +75,7 @@ number:
 
 %%
 
-int zp_sub(int a, int b) {
+int sub(int a, int b) {
     int val = (a-b) % P;
     if (val < 0)
         val += P;
@@ -95,21 +95,21 @@ int extended_euclid(int a, int b, int *x, int *y) {
     return d;
 }
 
-int zp_inv(int a) {
+int inv(int a) {
     int x, y;
     extended_euclid(a, P, &x, &y);
     return (x%P + P) % P;
 }
 
-int zp_div(long int a, int b) {
-    long int inv = zp_inv(b);
+int div(long int a, int b) {
+    long int inv = inv(b);
     return (int)((a*inv) % P);
 }
 
-int zp_pow(long int a, int pow) {
+int pow(long int a, int pow) {
     if (pow == 0)
         return 1;
-    long int b = zp_pow(a, pow/2);
+    long int b = pow(a, pow/2);
     if (pow % 2 == 0)
         return (int)((b*b) % P);
     else

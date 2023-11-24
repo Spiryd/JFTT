@@ -9,3 +9,4 @@ RUN apk add flex && apk add bison
 COPY . .
 
 RUN make
+RUN make clean

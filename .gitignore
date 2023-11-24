@@ -5,3 +5,4 @@ target/
 *.csv
 *.lock
 lex.yy.c
+.vscode/

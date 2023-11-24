@@ -1,4 +1,3 @@
-
 %option noyywrap
 
 %{
@@ -27,5 +26,6 @@ extern int yylex();
 "/" {return '/';}
 "^" {return '^';}
 \n  {return '\n';}
+"\\" {return EXTD} 
 .   {return ERR;}
 %%
