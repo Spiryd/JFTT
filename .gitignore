@@ -6,3 +6,4 @@ target/
 *.lock
 lex.yy.c
 .vscode/
+l3/2/parsetab.py
