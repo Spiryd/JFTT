@@ -1,7 +1,9 @@
+# importing libraries
 import ply.yacc as yacc
 import ply.lex as lex
 from sys import stdin
 
+# our field size, prime btw
 P = 1234577
 
 def flatten(x: int) -> int:
@@ -9,6 +11,7 @@ def flatten(x: int) -> int:
 
 
 def multiply(x: int, y: int) -> int:
+    ''' Multiplication inside finite field '''
     output = flatten(x)
     for i in range(1, y):
         output += x
@@ -17,6 +20,7 @@ def multiply(x: int, y: int) -> int:
 
 
 def inverse(a: int) -> int:
+    ''' Extended Euclidean Algorithm for finding modular inverse '''
     m = P
     x = 1
     y = 0
@@ -38,9 +42,10 @@ def inverse(a: int) -> int:
     return x
 
 def print_(*x) -> None:
+    ''' Print without Newline '''
     print(*x, end='')
 
-
+# Token declarations
 tokens = (
     'ADD', 'SUB', 'MUL', 'DIV', 'MOD', 'POW',
     'LPR', 'RPR',
@@ -48,9 +53,8 @@ tokens = (
     'COM'
 )
 
-# all the tokens
+# all the token definitions
 t_COM = r'\#.*'
-
 t_ADD = r'\+'
 t_MUL = r'\*'
 t_DIV = r'\/'
@@ -58,10 +62,9 @@ t_MOD = r'%'
 t_POW = r'\^'
 t_LPR = r'\('
 t_RPR = r'\)'
-
 t_SUB = r'-'
 
-
+# number string to int
 def t_NUM(t):
     r'[0-9]+'
     t.value = int(t.value)
@@ -96,7 +99,7 @@ precedence = (
 def p_STAR_EXPR(p):
     'STAR : EXPR'
     print()
-    print('ans =', p[1])
+    print('Wynik: ', p[1])
 
 
 # allow comments

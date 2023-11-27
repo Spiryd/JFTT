@@ -38,8 +38,8 @@ input:
 ;
 line: 
     expr '\n' { 
-            cout << "RPN: " << rpn << endl;
-            cout << "= " << $1 << endl; 
+            cout << rpn << endl;
+            cout << "Wynik: " << $1 << endl; 
             rpn = "";
         }
     | error '\n' { 

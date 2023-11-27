@@ -7,3 +7,4 @@ target/
 lex.yy.c
 .vscode/
 l3/2/parsetab.py
+l3/2/__pycache__/
