@@ -143,7 +143,9 @@ def p_EXPR_DIV(p):
     x = p[1]
     y = p[3]
     if y == 0:
-        raise 'division by zero'
+        print_('/ ')
+        print_('\nError: dzielenie przez 0')
+        return
     p[0] = flatten(multiply(x, inverse(y)))
     print_('/ ')
 
@@ -153,7 +155,9 @@ def p_EXPR_MOD(p):
     x = p[1]
     y = p[3]
     if y == 0:
-        raise 'mod by zero'
+        print_('% ')
+        print_('\nError: modulo przez 0')
+        return
     p[0] = flatten(flatten(x) % flatten(y))
     print_('% ')
 
