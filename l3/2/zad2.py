@@ -8,6 +8,8 @@ P = 1234577
 
 def flatten(x: int) -> int:
     return ((x % P) + P) % P
+def flatten_exp(x: int) -> int:
+    return ((x % (P-1)) + (P-1)) % (P-1)
 
 
 def multiply(x: int, y: int) -> int:
@@ -18,6 +20,13 @@ def multiply(x: int, y: int) -> int:
         output = flatten(output)
     return output
 
+def multiply_exp(x: int, y: int) -> int:
+    ''' Multiplication inside finite field '''
+    output = flatten_exp(x)
+    for i in range(1, y):
+        output += x
+        output = flatten_exp(output)
+    return output
 
 def inverse(a: int) -> int:
     ''' Extended Euclidean Algorithm for finding modular inverse '''
@@ -41,13 +50,38 @@ def inverse(a: int) -> int:
 
     return x
 
+def inverse_exp(a: int) -> int:
+    ''' Extended Euclidean Algorithm for finding modular inverse '''
+    m = (P-1)
+    x = 1
+    y = 0
+
+    while a > 1:
+        try:
+            quotient = a // m
+        except:
+            return
+        t = m
+
+        m = a % m
+        a = t
+        t = y
+
+        y = x - quotient * y
+        x = t
+
+    if x < 0:
+        x += (P-1)
+
+    return x
+
 def print_(*x) -> None:
     ''' Print without Newline '''
     print(*x, end='')
 
 # Token declarations
 tokens = (
-    'ADD', 'SUB', 'MUL', 'DIV', 'MOD', 'POW',
+    'ADD', 'SUB', 'MUL', 'DIV', 'POW',
     'LPR', 'RPR',
     'NUM',
     'COM'
@@ -58,7 +92,6 @@ t_COM = r'\#.*'
 t_ADD = r'\+'
 t_MUL = r'\*'
 t_DIV = r'\/'
-t_MOD = r'%'
 t_POW = r'\^'
 t_LPR = r'\('
 t_RPR = r'\)'
@@ -91,8 +124,8 @@ lex.lex()
 # precedence rules for the arithmetic operators
 precedence = (
     ('left', 'ADD', 'SUB'),
-    ('left', 'MUL', 'DIV', 'MOD'),
-    ('right', 'NEG', 'POW')
+    ('left', 'MUL', 'DIV', 'POW'),
+    ('right', 'NEG')
 )
 
 
@@ -119,6 +152,10 @@ def p_NUMR_NEG(p):
     p[0] = flatten(0 - flatten(p[2]))
     print_(p[0], '')
 
+def p_EXPR_NEG(p):
+    'EXPR : SUB EXPR %prec NEG'
+    p[0] = flatten(0 - flatten(p[2]))
+    print_("~", '')
 
 def p_EXPR_ADD(p):
     'EXPR : EXPR ADD EXPR'
@@ -149,25 +186,13 @@ def p_EXPR_DIV(p):
     p[0] = flatten(multiply(x, inverse(y)))
     print_('/ ')
 
-
-def p_EXPR_MOD(p):
-    'EXPR : EXPR MOD EXPR'
-    x = p[1]
-    y = p[3]
-    if y == 0:
-        print_('% ')
-        print_('\nError: modulo przez 0')
-        return
-    p[0] = flatten(flatten(x) % flatten(y))
-    print_('% ')
-
-
-# allow only one `POW`er move per `EXPR`
 def p_EXPR_POW(p):
-    'EXPR : NUMR POW NUMR'
+    'EXPR : EXPR POW EXPO'
     x = p[1]
     y = p[3]
     output = 1
+    if y is None :
+        return
     for i in range(0, y):
         output *= x
         output = flatten(output)
@@ -182,6 +207,66 @@ def p_EXPR_PRS(p):
 
 def p_EXPR_NUM(p):
     'EXPR : NUMR'
+    p[0] = p[1]
+
+# Exponent clalc
+
+def p_EXPONUMR(p):
+    'EXPONUMR : NUM'
+    p[0] = flatten_exp(p[1])
+    print_(p[0], '')
+
+
+def p_EXPONUMR_NEG(p):
+    'EXPONUMR : SUB NUM %prec NEG'
+    p[0] = flatten_exp(0 - flatten_exp(p[2]))
+    print_(p[0], '')
+
+def p_EXPO_NEG(p):
+    'EXPO : SUB EXPO %prec NEG'
+    p[0] = flatten_exp(0 - flatten_exp(p[2]))
+    print_("~", '')
+
+def p_EXPO_ADD(p):
+    'EXPO : EXPO ADD EXPO'
+    p[0] = flatten_exp(flatten_exp(p[1]) + flatten_exp(p[3]))
+    print_('+ ')
+
+
+def p_EXPO_SUB(p):
+    'EXPO : EXPO SUB EXPO'
+    p[0] = flatten_exp(flatten_exp(p[1]) - flatten_exp(p[3]))
+    print_('- ')
+
+
+def p_EXPO_MUL(p):
+    'EXPO : EXPO MUL EXPO'
+    p[0] = multiply_exp(p[1], p[3])
+    print_('* ')
+
+
+def p_EXPO_DIV(p):
+    'EXPO : EXPO DIV EXPO'
+    x = p[1]
+    y = p[3]
+    if y == 0:
+        print_('/ ')
+        print_('\nError: dzielenie przez 0')
+        return
+    r = inverse_exp(y)
+    if r is None :
+        print_(f'\nError: {y} nie odwracalne w eksponencie')
+        return
+    p[0] = flatten_exp(multiply_exp(x, inverse_exp(y)))
+    print_('/ ')
+
+def p_EXPO_PRS(p):
+    'EXPO : LPR EXPO RPR'
+    p[0] = p[2]
+
+
+def p_EXPO_NUM(p):
+    'EXPO : EXPONUMR'
     p[0] = p[1]
 
 
