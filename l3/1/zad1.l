@@ -15,7 +15,7 @@ extern int yylex();
 ^#(.|\\\n)*\n ;
 \\\n   ;
 [[:digit:]]+ { 
-    yylval = atoi(yytext) % P; 
+    yylval = atoi(yytext); 
     return NUM; 
 }
 "(" {return '(';}

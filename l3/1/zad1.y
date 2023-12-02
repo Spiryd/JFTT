@@ -10,6 +10,9 @@ extern int yylex();
 extern int yyparse();
 int yyerror(string s);
 
+int flatten(int a);
+int flatten_exp(int a);
+
 int gp_sub(int a, int b);
 int gp_sub_exp(int a, int b);
 
@@ -57,11 +60,11 @@ line:
 expr: 
     number                          { rpn += to_string($1) + " "; $$ = $1; }
     | '(' expr ')'                  { $$ = $2; }
-    | '-' '(' expr ')' %prec NEG    { rpn += "~ "; $$ = ((-$3 % P) + P) % P; }
-    | expr '+' expr                 { rpn += "+ "; $$ = ($1 + $3) % P; }
-    | expr '-' expr                 { rpn += "- "; $$ = gp_sub($1, $3); }
-    | expr '*' expr                 { rpn += "* "; $$ = ($1 * $3) % P; }
-    | expr '^' exponent             { rpn += "^ "; $$ = gp_pow($1, ($3 + P) % P); }
+    | '-' expr %prec NEG            { rpn += "~ "; $$ = flatten(-$2); }
+    | expr '+' expr                 { rpn += "+ "; $$ = flatten($1 + $3); }
+    | expr '-' expr                 { rpn += "- "; $$ = flatten(gp_sub($1, $3)); }
+    | expr '*' expr                 { rpn += "* "; $$ = flatten($1 * $3); }
+    | expr '^' exponent             { rpn += "^ "; $$ = flatten(gp_pow($1, flatten_exp($3))); }
     | expr '/' expr { 
             rpn += "/ "; 
             if ($3 == 0) { 
@@ -75,7 +78,7 @@ expr:
 exponent:
     exp_number                              { rpn += to_string($1) + " "; $$ = $1; }
     | '(' exponent ')'                      { $$ = $2; }
-    | '-' '(' exponent ')' %prec NEG        { rpn += "~ "; $$ = ((-$3 % (P - 1)) + (P - 1)) % (P - 1); }
+    | '-' exponent %prec NEG                { rpn += "~ "; $$ = ((-$2 % (P - 1)) + (P - 1)) % (P - 1); }
     | exponent '+' exponent                 { rpn += "+ "; $$ = ($1 + $3) % (P - 1); }
     | exponent '-' exponent                 { rpn += "- "; $$ = gp_sub_exp($1, $3); }
     | exponent '*' exponent                 { rpn += "* "; $$ = ($1 * $3) % (P - 1); }
@@ -83,6 +86,9 @@ exponent:
             rpn += "/ "; 
             if ($3 == 0) { 
                 error_msg = "dzielenie wykładnika przez 0"; 
+                YYERROR; 
+            } else if ($3 == 2) { 
+                error_msg = "dzielenie wykładnika przez 2"; 
                 YYERROR; 
             } 
             else {
@@ -97,14 +103,22 @@ exponent:
         }
 ;
 number:
-    NUM                     { $$ = $1; }
-    | '-' number %prec NEG  { $$ = ((-$2 % P) + P) % P; }
+    NUM                     { $$ = flatten($1); }
+    | '-' number %prec NEG  { $$ = flatten(-$2); }
 ;
 exp_number:
-    NUM                         { $$ = $1; }
-    | '-' exp_number %prec NEG  { $$ = ((-$2 % (P - 1)) + (P - 1)) % (P - 1); }
+    NUM                         { $$ = flatten_exp($1) ; }
+    | '-' exp_number %prec NEG  { $$ =  flatten_exp(-$2); }
 
 %%
+
+int flatten(int a) {
+    return ((a % P) + P) % P;
+}
+
+int flatten_exp(int a) {
+    return ((a % (P-1)) + (P-1)) % (P-1);
+}
 
 int gp_sub(int a, int b) {
     int val = (a-b) % P;
@@ -118,6 +132,23 @@ int gp_sub_exp(int a, int b) {
     if (val < 0)
         val += (P - 1);
     return val;
+}
+
+int inverse(int a, int n) {
+    int t = 0;
+    int newt = 1;
+    int r = n;
+    int newr = a;
+    while() {
+
+    }
+    if r > 1 {
+        return -1;
+    }
+    if t < 0 {
+        t = t + n;
+    }
+    return t
 }
 
 int extended_euclid(int a, int b, int *x, int *y) {
