@@ -87,14 +87,10 @@ exponent:
             if ($3 == 0) { 
                 error_msg = "dzielenie wykładnika przez 0"; 
                 YYERROR; 
-            } else if ($3 == 2) { 
-                error_msg = "dzielenie wykładnika przez 2"; 
-                YYERROR; 
-            } 
-            else {
+            } else {
                 int x,y;
-                extended_euclid($1, $3, &x, &y);
-                if(y != 1) {
+                int r = extended_euclid($3, P-1, &x, &y);
+                if(r > 1) {
                     error_msg = "element nie jest odwracalny.";
                     YYERROR;
                 } else 
@@ -132,23 +128,6 @@ int gp_sub_exp(int a, int b) {
     if (val < 0)
         val += (P - 1);
     return val;
-}
-
-int inverse(int a, int n) {
-    int t = 0;
-    int newt = 1;
-    int r = n;
-    int newr = a;
-    while() {
-
-    }
-    if r > 1 {
-        return -1;
-    }
-    if t < 0 {
-        t = t + n;
-    }
-    return t
 }
 
 int extended_euclid(int a, int b, int *x, int *y) {
