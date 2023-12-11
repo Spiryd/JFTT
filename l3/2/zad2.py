@@ -124,8 +124,8 @@ lex.lex()
 # precedence rules for the arithmetic operators
 precedence = (
     ('left', 'ADD', 'SUB'),
-    ('left', 'MUL', 'DIV', 'POW'),
-    ('right', 'NEG')
+    ('left', 'MUL', 'DIV'),
+    ('right', 'NEG', 'POW')
 )
 
 
